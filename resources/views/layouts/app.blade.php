@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>@yield('title', 'Tienda Virtual')</title>
+    <title>@yield('title', 'StreetWear CR')</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -16,7 +16,7 @@
         <div class="container">
 
             <a class="navbar-brand fw-bold" href="{{ route('products.index') }}">
-                Tienda Virtual
+                StreetWear CR
             </a>
 
             <button
@@ -51,22 +51,17 @@
         </div>
     </nav>
 
-
     <main class="container py-5">
-
         @yield('content')
-
     </main>
-
 
     <footer class="bg-dark text-white text-center py-4 mt-5">
 
         <p class="mb-0">
-            Tienda Virtual © 2026
+            StreetWear CR © 2026
         </p>
 
     </footer>
 
 </body>
-
 </html>

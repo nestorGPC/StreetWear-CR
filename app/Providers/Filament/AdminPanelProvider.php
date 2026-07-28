@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('StreetWear CR')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
