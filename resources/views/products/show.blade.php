@@ -1,64 +1,140 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>{{ $product->name }}</title>
-</head>
+@section('title', $product->name . ' | StreetWear CR')
 
-<body>
+@section('content')
 
-    <a href="{{ route('products.index') }}">
+<div class="mb-4">
+
+    <a
+        href="{{ route('products.index') }}"
+        class="text-decoration-none text-dark"
+    >
         ← Volver al catálogo
     </a>
 
-    <h1>{{ $product->name }}</h1>
+</div>
 
-    @if ($product->image)
-        <img
-            src="{{ asset('storage/' . $product->image) }}"
-            alt="{{ $product->name }}"
-            width="400"
-        >
-    @endif
 
-    <p>
-        <strong>Categoría:</strong>
-        {{ $product->category->name }}
-    </p>
+<div class="row g-5 align-items-start">
 
-    <p>
-        {{ $product->description }}
-    </p>
+    {{-- IMAGEN --}}
+    <div class="col-12 col-lg-6">
 
-    <h2>
-        ₡{{ number_format($product->price, 0, ',', '.') }}
-    </h2>
+        <div class="card border-0 shadow-sm overflow-hidden">
 
-    <p>
-        Stock disponible: {{ $product->stock }}
-    </p>
+            @if ($product->image)
 
-    @if ($product->stock > 0)
+                <img
+                    src="{{ asset('storage/' . $product->image) }}"
+                    class="img-fluid w-100"
+                    style="max-height: 550px; object-fit: cover;"
+                    alt="{{ $product->name }}"
+                >
 
-        <form action="{{ route('cart.add', $product) }}" method="POST">
+            @else
 
-            @csrf
+                <div
+                    class="bg-light d-flex align-items-center justify-content-center"
+                    style="height: 450px;"
+                >
+                    <span class="text-muted">
+                        Producto sin imagen
+                    </span>
+                </div>
 
-            <button type="submit">
-                Agregar al carrito
-            </button>
+            @endif
 
-        </form>
+        </div>
 
-    @else
+    </div>
 
-        <p>
-            Producto agotado
+
+    {{-- INFORMACIÓN --}}
+    <div class="col-12 col-lg-6">
+
+        <span class="badge bg-secondary mb-3">
+            {{ $product->category->name }}
+        </span>
+
+        <h1 class="display-5 fw-bold mb-3">
+            {{ $product->name }}
+        </h1>
+
+        <h2 class="fw-bold mb-4">
+            ₡{{ number_format($product->price, 0, ',', '.') }}
+        </h2>
+
+
+        <p class="text-muted fs-5">
+            {{ $product->description }}
         </p>
 
-    @endif
 
-</body>
-</html>
+        <hr>
+
+
+        {{-- DISPONIBILIDAD --}}
+        @if ($product->stock > 0)
+
+            <p class="text-success fw-semibold mb-4">
+                ✓ Producto disponible
+            </p>
+
+        @else
+
+            <p class="text-danger fw-semibold mb-4">
+                Producto agotado
+            </p>
+
+        @endif
+
+
+        {{-- BOTONES --}}
+        @if ($product->stock > 0)
+
+            <div class="d-grid gap-2">
+
+                <form
+                    action="{{ route('cart.add', $product) }}"
+                    method="POST"
+                >
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="btn btn-dark btn-lg w-100"
+                    >
+                        Agregar al carrito
+                    </button>
+
+                </form>
+
+
+                {{-- Lo conectaremos al checkout --}}
+                <a
+                    href="{{ route('cart.index') }}"
+                    class="btn btn-outline-dark btn-lg"
+                >
+                    Ir al carrito
+                </a>
+
+            </div>
+
+        @else
+
+            <button
+                class="btn btn-secondary btn-lg w-100"
+                disabled
+            >
+                Producto no disponible
+            </button>
+
+        @endif
+
+    </div>
+
+</div>
+
+@endsection

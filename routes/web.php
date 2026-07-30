@@ -3,12 +3,40 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\CheckoutController;
+
+
+/*
+|--------------------------------------------------------------------------
+| Inicio
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', function () {
+    return redirect()->route('products.index');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Productos
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/productos', [ProductController::class, 'index'])
     ->name('products.index');
 
 Route::get('/productos/{product}', [ProductController::class, 'show'])
     ->name('products.show');
+
+
+/*
+|--------------------------------------------------------------------------
+| Carrito
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/carrito', [CartController::class, 'index'])
     ->name('cart.index');
@@ -21,3 +49,61 @@ Route::put('/carrito/actualizar/{product}', [CartController::class, 'update'])
 
 Route::delete('/carrito/eliminar/{product}', [CartController::class, 'remove'])
     ->name('cart.remove');
+
+
+/*
+|--------------------------------------------------------------------------
+| Invitados
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('guest')->group(function () {
+
+    Route::get('/registro', [AuthController::class, 'showRegister'])
+        ->name('register');
+
+    Route::post('/registro', [AuthController::class, 'register'])
+        ->name('register.store');
+
+    Route::get('/login', [AuthController::class, 'showLogin'])
+        ->name('login');
+
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login.store');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Clientes autenticados
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/mi-cuenta', [AccountController::class, 'dashboard'])
+        ->name('account.dashboard');
+
+    Route::get('/mi-cuenta/perfil', [AccountController::class, 'editProfile'])
+        ->name('account.profile');
+
+    Route::put('/mi-cuenta/perfil', [AccountController::class, 'updateProfile'])
+        ->name('account.profile.update');
+
+    Route::get('/mi-cuenta/pedidos', [AccountController::class, 'orders'])
+        ->name('account.orders');
+
+    Route::post('/logout', [AuthController::class, 'logout'])
+        ->name('logout');
+    
+    Route::get('/checkout', [CheckoutController::class, 'index'])
+        ->name('checkout.index');
+
+    Route::post('/checkout', [CheckoutController::class, 'store'])
+        ->name('checkout.store');
+
+    Route::get(
+        '/checkout/confirmacion/{order}',
+        [CheckoutController::class, 'success'])
+        ->name('checkout.success');
+});

@@ -174,6 +174,13 @@
                         </strong>
                     </div>
 
+                    <a
+                        href="{{ route('checkout.index') }}"
+                        class="btn btn-dark btn-lg w-100 mt-4"
+                    >
+                        Continuar con la compra
+                    </a>
+
 
                     <div class="d-flex justify-content-between">
                         <span>IVA (13%):</span>
