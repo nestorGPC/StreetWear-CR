@@ -136,5 +136,110 @@
     </div>
 
 </div>
+        @if ($recentProducts->isNotEmpty())
+
+            <hr class="my-5">
+
+            <section>
+
+                <div class="mb-4">
+
+                    <h2 class="fw-bold">
+                        Vistos recientemente
+                    </h2>
+
+                    <p class="text-muted">
+                        Productos que has visitado recientemente.
+                    </p>
+
+                </div>
+
+
+                <div class="row g-4">
+
+                    @foreach ($recentProducts as $recentProduct)
+
+                        <div class="col-12 col-md-6 col-lg-3">
+
+                            <div class="card h-100 shadow-sm border-0">
+
+                                {{-- IMAGEN --}}
+                                @if ($recentProduct->image)
+
+                                    <img
+                                        src="{{ asset(
+                                            'storage/' .
+                                            $recentProduct->image
+                                        ) }}"
+                                        class="card-img-top"
+                                        style="height: 220px; object-fit: cover;"
+                                        alt="{{ $recentProduct->name }}"
+                                    >
+
+                                @else
+
+                                    <div
+                                        class="bg-light d-flex align-items-center justify-content-center"
+                                        style="height: 220px;"
+                                    >
+
+                                        <span class="text-muted">
+                                            Sin imagen
+                                        </span>
+
+                                    </div>
+
+                                @endif
+
+
+                                <div class="card-body d-flex flex-column">
+
+                                    <span
+                                        class="badge bg-secondary align-self-start mb-2"
+                                    >
+                                        {{ $recentProduct->category->name }}
+                                    </span>
+
+
+                                    <h5 class="fw-bold">
+                                        {{ $recentProduct->name }}
+                                    </h5>
+
+
+                                    <p class="fw-bold fs-5 mt-auto">
+
+                                        ₡{{ number_format(
+                                            $recentProduct->price,
+                                            0,
+                                            ',',
+                                            '.'
+                                        ) }}
+
+                                    </p>
+
+
+                                    <a
+                                        href="{{ route(
+                                            'products.show',
+                                            $recentProduct
+                                        ) }}"
+                                        class="btn btn-outline-dark w-100"
+                                    >
+                                        Ver producto
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            </section>
+
+        @endif
 
 @endsection
