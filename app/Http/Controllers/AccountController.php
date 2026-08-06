@@ -12,10 +12,12 @@ class AccountController extends Controller
         return view('account.dashboard');
     }
 
+
     public function editProfile()
     {
         return view('account.profile');
     }
+
 
     public function updateProfile(Request $request)
     {
@@ -36,15 +38,24 @@ class AccountController extends Controller
             ],
         ]);
 
+
         $user->update($data);
+
 
         return redirect()
             ->route('account.profile')
             ->with('success', 'Perfil actualizado correctamente.');
     }
 
-    public function orders()
+
+    public function orders(Request $request)
     {
-        return view('account.orders');
+        $orders = $request->user()
+            ->orders()
+            ->latest()
+            ->get();
+
+
+        return view('account.orders', compact('orders'));
     }
 }
