@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ReportController;
 
 
 /*
@@ -95,7 +96,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
-    
+
     Route::get('/checkout', [CheckoutController::class, 'index'])
         ->name('checkout.index');
 
@@ -104,6 +105,25 @@ Route::middleware('auth')->group(function () {
 
     Route::get(
         '/checkout/confirmacion/{order}',
-        [CheckoutController::class, 'success'])
-        ->name('checkout.success');
+        [CheckoutController::class, 'success']
+    )->name('checkout.success');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reportes
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/reportes', [ReportController::class, 'index'])
+        ->name('reports.index');
+
+    Route::get('/reportes/pedidos', [ReportController::class, 'orders'])
+        ->name('reports.orders');
+
+    Route::get('/reportes/ventas', [ReportController::class, 'sales'])
+        ->name('reports.sales');
+
+    Route::get('/reportes/productos', [ReportController::class, 'products'])
+        ->name('reports.products');
 });
