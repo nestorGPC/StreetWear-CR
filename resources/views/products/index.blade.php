@@ -157,14 +157,14 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <div>
-
-        <h2 class="fw-bold mb-1">
-            Catálogo de productos
-        </h2>
-
-        <p class="text-muted mb-0">
-            Descubre nuestros productos disponibles.
-        </p>
+        
+    <h2 class="fw-bold mb-1">
+        Descubre nuestro catálogo
+    </h2>
+    
+    <p class="text-muted mb-0">
+        Encuentra ropa, tenis, gorras y accesorios para tu estilo.
+    </p>
 
     </div>
 
