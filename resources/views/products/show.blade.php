@@ -161,7 +161,7 @@
 
                         <div class="col-12 col-md-6 col-lg-3">
 
-                            <div class="card h-100 shadow-sm border-0">
+                            <div class="card h-100 shadow-sm border-0 product-card">
 
                                 {{-- IMAGEN --}}
                                 @if ($recentProduct->image)
@@ -171,16 +171,14 @@
                                             'storage/' .
                                             $recentProduct->image
                                         ) }}"
-                                        class="card-img-top"
-                                        style="height: 220px; object-fit: cover;"
+                                        class="product-image card-img-top"
                                         alt="{{ $recentProduct->name }}"
                                     >
 
                                 @else
 
                                     <div
-                                        class="bg-light d-flex align-items-center justify-content-center"
-                                        style="height: 220px;"
+                                        class="product-image bg-light d-flex align-items-center justify-content-center"
                                     >
 
                                         <span class="text-muted">

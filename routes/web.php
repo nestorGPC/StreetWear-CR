@@ -70,7 +70,8 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('/login', [AuthController::class, 'login'])
-        ->name('login.store');
+        ->name('login.store')
+        ->middleware('throttle:5,1');
 });
 
 
@@ -93,6 +94,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mi-cuenta/pedidos', [AccountController::class, 'orders'])
         ->name('account.orders');
+
+    Route::get(
+        '/mi-cuenta/pedidos/{order}',
+        [AccountController::class, 'showOrder']
+    )->name('account.orders.show');
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');

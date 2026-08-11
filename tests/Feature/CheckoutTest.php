@@ -61,10 +61,15 @@ class CheckoutTest extends TestCase
             ->post('/carrito/agregar/' . $gorra->id);
 
 
+        session([
+            'checkout_token' => 'token-checkout-test',
+        ]);
+
         $response = $this->actingAs($user)
             ->post('/checkout', [
                 'shipping_address' => 'San José, Costa Rica',
                 'payment_method' => 'card',
+                'checkout_token' => 'token-checkout-test',
             ]);
 
 
@@ -176,10 +181,15 @@ class CheckoutTest extends TestCase
 
 
 
+        session([
+            'checkout_token' => 'token-checkout-test',
+        ]);
+
         $response = $this->actingAs($user)
             ->post('/checkout', [
                 'shipping_address' => 'San José, Costa Rica',
                 'payment_method' => 'card',
+                'checkout_token' => 'token-checkout-test',
             ]);
 
 

@@ -60,6 +60,8 @@
                                     <img
                                         src="{{ asset('storage/' . $item['image']) }}"
                                         width="80"
+                                        height="80"
+                                        style="object-fit: cover; border-radius: 0.25rem;"
                                         alt="{{ $item['name'] }}"
                                     >
                                 @endif
@@ -174,15 +176,7 @@
                         </strong>
                     </div>
 
-                    <a
-                        href="{{ route('checkout.index') }}"
-                        class="btn btn-dark btn-lg w-100 mt-4"
-                    >
-                        Continuar con la compra
-                    </a>
-
-
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between mt-2">
                         <span>IVA (13%):</span>
 
                         <strong>
@@ -191,7 +185,7 @@
                     </div>
 
 
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between mt-2">
                         <span>Envío:</span>
 
                         <strong>
@@ -203,14 +197,20 @@
 
 
                     <div class="d-flex justify-content-between">
-
                         <h4>Total:</h4>
 
                         <h4>
                             ₡{{ number_format($total, 0, ',', '.') }}
                         </h4>
-
                     </div>
+
+
+                    <a
+                        href="{{ route('checkout.index') }}"
+                        class="btn btn-dark btn-lg w-100 mt-4"
+                    >
+                        Continuar con la compra
+                    </a>
 
                 </div>
 
@@ -222,8 +222,27 @@
 
 @else
 
-    <div class="alert alert-info">
-        Tu carrito está vacío.
+    <div class="empty-state">
+
+        <div class="empty-icon mb-3" aria-hidden="true">
+            🛒
+        </div>
+
+        <h3 class="fw-bold">
+            Tu carrito está vacío
+        </h3>
+
+        <p class="text-muted">
+            Agrega productos para comenzar tu pedido.
+        </p>
+
+        <a
+            href="{{ route('products.index') }}"
+            class="btn btn-dark"
+        >
+            Ver catálogo
+        </a>
+
     </div>
 
 @endif

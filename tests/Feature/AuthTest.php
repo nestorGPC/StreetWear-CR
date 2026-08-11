@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -76,5 +77,29 @@ class AuthTest extends TestCase
         $response->assertRedirect(route('login'));
 
         $this->assertGuest();
+    }
+
+    public function test_se_limitan_los_intentos_de_inicio_de_sesion(): void
+    {
+        User::factory()->create([
+            'email' => 'cliente@example.com',
+            'password' => Hash::make('password123'),
+        ]);
+
+        Cache::flush();
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->post('/login', [
+                'email' => 'cliente@example.com',
+                'password' => 'password-mala',
+            ]);
+        }
+
+        $response = $this->post('/login', [
+            'email' => 'cliente@example.com',
+            'password' => 'password-mala',
+        ]);
+
+        $response->assertStatus(429);
     }
 }

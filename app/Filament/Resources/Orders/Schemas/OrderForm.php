@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders\Schemas;
 
+use App\Models\Order;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -26,11 +27,11 @@ class OrderForm
                 Select::make('status')
                     ->label('Estado')
                     ->options([
-                        'pending' => 'Pendiente',
-                        'processing' => 'Preparando',
-                        'shipped' => 'Enviado',
-                        'delivered' => 'Entregado',
-                        'cancelled' => 'Cancelado',
+                        Order::STATUS_PENDING => 'Pendiente',
+                        Order::STATUS_PROCESSING => 'Preparando',
+                        Order::STATUS_SHIPPED => 'Enviado',
+                        Order::STATUS_DELIVERED => 'Entregado',
+                        Order::STATUS_CANCELLED => 'Cancelado',
                     ])
                     ->required()
                     ->native(false),

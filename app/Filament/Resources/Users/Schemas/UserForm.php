@@ -20,8 +20,13 @@ class UserForm
                     ->required(),
                 DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
+                    ->label('Password')
                     ->password()
-                    ->required(),
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $operation) => $operation === 'create')
+                    ->helperText(fn (string $operation) => $operation === 'edit'
+                        ? 'Leave blank to keep the current password.'
+                        : '')
             ]);
     }
 }

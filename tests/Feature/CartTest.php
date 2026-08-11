@@ -109,6 +109,22 @@ class CartTest extends TestCase
     }
 
 
+    public function test_no_se_puede_actualizar_un_producto_inactivo(): void
+    {
+        $product = $this->crearProducto(5);
+
+        $this->post('/carrito/agregar/' . $product->id);
+
+        $product->update(['active' => false]);
+
+        $response = $this->put('/carrito/actualizar/' . $product->id, [
+            'quantity' => 2,
+        ]);
+
+        $response->assertSessionHas('error');
+    }
+
+
     public function test_se_puede_eliminar_un_producto_del_carrito(): void
     {
         $product = $this->crearProducto();

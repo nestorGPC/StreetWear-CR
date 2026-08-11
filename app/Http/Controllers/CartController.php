@@ -71,6 +71,13 @@ class CartController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        if (! $product->active) {
+            return back()->with(
+                'error',
+                'Este producto ya no está disponible.'
+            );
+        }
+
         $request->validate([
             'quantity' => [
                 'required',

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Payments\Schemas;
 
+use App\Models\Payment;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -25,10 +26,10 @@ class PaymentForm
                 Select::make('status')
                     ->label('Estado')
                     ->options([
-                        'pending' => 'Pendiente',
-                        'paid' => 'Pagado',
-                        'failed' => 'Fallido',
-                        'refunded' => 'Reembolsado',
+                        Payment::STATUS_PENDING => 'Pendiente',
+                        Payment::STATUS_PAID => 'Pagado',
+                        Payment::STATUS_FAILED => 'Fallido',
+                        Payment::STATUS_REFUNDED => 'Reembolsado',
                     ])
                     ->required()
                     ->native(false),

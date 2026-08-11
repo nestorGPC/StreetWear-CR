@@ -40,10 +40,15 @@ class PaymentTest extends TestCase
             ->post('/carrito/agregar/' . $product->id);
 
 
+        session([
+            'checkout_token' => 'token-checkout-test',
+        ]);
+
         $this->actingAs($user)
             ->post('/checkout', [
                 'shipping_address' => 'San José, Costa Rica',
                 'payment_method' => 'paypal',
+                'checkout_token' => 'token-checkout-test',
             ]);
 
 

@@ -25,14 +25,19 @@ class ProductController extends Controller
 
         // Filtrar por categoría
         if ($request->filled('category')) {
-            $query->where(
-                'category_id',
-                $request->category
-            );
+            $category = Category::find($request->category);
+
+            if ($category) {
+                $query->where('category_id', $category->id);
+            }
         }
 
         // Precio mínimo
-        if ($request->filled('min_price')) {
+        if (
+            $request->filled('min_price')
+            && is_numeric($request->min_price)
+            && $request->min_price >= 0
+        ) {
             $query->where(
                 'price',
                 '>=',
@@ -41,7 +46,11 @@ class ProductController extends Controller
         }
 
         // Precio máximo
-        if ($request->filled('max_price')) {
+        if (
+            $request->filled('max_price')
+            && is_numeric($request->max_price)
+            && $request->max_price >= 0
+        ) {
             $query->where(
                 'price',
                 '<=',

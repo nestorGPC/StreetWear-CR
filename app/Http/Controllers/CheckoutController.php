@@ -36,17 +36,29 @@ class CheckoutController extends Controller
         $shipping = $this->cartCalculator->shipping($subtotal);
         $total = $this->cartCalculator->total($subtotal);
 
+        $checkoutToken = Str::random(32);
+        session()->put('checkout_token', $checkoutToken);
+
         return view('checkout.index', compact(
             'cart',
             'subtotal',
             'tax',
             'shipping',
-            'total'
+            'total',
+            'checkoutToken'
         ));
     }
 
     public function store(Request $request)
     {
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Tu carrito está vacío.');
+        }
+
         $data = $request->validate([
             'shipping_address' => [
                 'required',
@@ -59,37 +71,44 @@ class CheckoutController extends Controller
                 'required',
                 'in:card,paypal',
             ],
+
+            'checkout_token' => [
+                'required',
+                'string',
+            ],
         ]);
 
-        $cart = session()->get('cart', []);
+        /*
+         * Token de idempotencia: evita que un doble POST
+         * (doble clic o reenvío del formulario) cree dos pedidos.
+         */
+        $sessionToken = session()->pull('checkout_token');
 
-        if (empty($cart)) {
+        if (
+            $sessionToken === null
+            || ! hash_equals($sessionToken, $data['checkout_token'])
+        ) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Tu carrito está vacío.');
+                ->with('error', 'La sesión de compra expiró. Vuelve a intentarlo.');
         }
-
-        $subtotal = $this->cartCalculator->subtotal($cart);
-        $tax = $this->cartCalculator->tax($subtotal);
-        $shipping = $this->cartCalculator->shipping($subtotal);
-        $total = $this->cartCalculator->total($subtotal);
 
         try {
             $order = DB::transaction(function () use (
                 $request,
                 $data,
-                $cart,
-                $subtotal,
-                $tax,
-                $shipping,
-                $total
+                $cart
             ) {
                 /*
                  * Volvemos a comprobar cada producto usando la base de datos.
                  * No confiamos únicamente en los valores almacenados en sesión.
                  */
+                $subtotal = 0;
+
                 foreach ($cart as $item) {
-                    $product = Product::find($item['id']);
+                    $product = Product::query()
+                        ->lockForUpdate()
+                        ->find($item['id']);
 
                     if (! $product || ! $product->active) {
                         throw new RuntimeException(
@@ -102,7 +121,13 @@ class CheckoutController extends Controller
                             "No hay suficiente inventario de {$product->name}."
                         );
                     }
+
+                    $subtotal += (float) $product->price * $item['quantity'];
                 }
+
+                $tax = $this->cartCalculator->tax($subtotal);
+                $shipping = $this->cartCalculator->shipping($subtotal);
+                $total = $this->cartCalculator->total($subtotal);
 
                 $trackingNumber = $this->generateTrackingNumber();
 

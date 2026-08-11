@@ -45,6 +45,12 @@
 
     @csrf
 
+    <input
+        type="hidden"
+        name="checkout_token"
+        value="{{ $checkoutToken }}"
+    >
+
     <div class="row g-4">
 
         {{-- DATOS DE COMPRA --}}

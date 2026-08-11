@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -57,5 +58,21 @@ class AccountController extends Controller
 
 
         return view('account.orders', compact('orders'));
+    }
+
+
+    public function showOrder(Request $request, Order $order)
+    {
+        /*
+         * Un cliente solo puede ver sus propios pedidos.
+         */
+        abort_unless(
+            $order->user_id === $request->user()->id,
+            403
+        );
+
+        $order->load('items.product', 'payment');
+
+        return view('account.order-detail', compact('order'));
     }
 }

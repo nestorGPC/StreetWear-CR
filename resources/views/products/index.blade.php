@@ -184,26 +184,40 @@
 
             <div class="card h-100 shadow-sm product-card">
 
-                @if ($product->image)
+                <div class="position-relative">
 
-                    <img
-                        src="{{ asset('storage/' . $product->image) }}"
-                        class="card-img-top"
-                        alt="{{ $product->name }}"
-                    >
+                    @if ($product->image)
 
-                @else
+                        <img
+                            src="{{ asset('storage/' . $product->image) }}"
+                            class="product-image card-img-top"
+                            alt="{{ $product->name }}"
+                        >
 
-                    <div
-                        class="bg-light d-flex align-items-center justify-content-center"
-                        style="height: 220px;"
-                    >
-                        <span class="text-muted">
-                            Sin imagen
+                    @else
+
+                        <div
+                            class="product-image bg-light d-flex align-items-center justify-content-center"
+                        >
+                            <span class="text-muted">
+                                Sin imagen
+                            </span>
+                        </div>
+
+                    @endif
+
+
+                    @if ($product->stock <= 0)
+
+                        <span
+                            class="badge bg-danger position-absolute top-0 start-0 m-2"
+                        >
+                            Agotado
                         </span>
-                    </div>
 
-                @endif
+                    @endif
+
+                </div>
 
 
                 <div class="card-body d-flex flex-column">
@@ -228,7 +242,7 @@
                     <p class="card-text text-muted">
 
                         {{ \Illuminate\Support\Str::limit(
-                            $product->description,
+                            $product->description ?? '',
                             100
                         ) }}
 
@@ -251,13 +265,13 @@
                     {{-- Stock --}}
                     @if ($product->stock > 0)
 
-                        <p class="text-success">
+                        <p class="text-success mb-2">
                             Disponible: {{ $product->stock }}
                         </p>
 
                     @else
 
-                        <p class="text-danger fw-bold">
+                        <p class="text-danger fw-bold mb-2">
                             Agotado
                         </p>
 
@@ -282,9 +296,26 @@
 
         <div class="col-12">
 
-            <div class="alert alert-info text-center">
+            <div class="empty-state">
 
-                No encontramos productos con los filtros seleccionados.
+                <div class="empty-icon mb-3" aria-hidden="true">
+                    🔍
+                </div>
+
+                <h3 class="fw-bold">
+                    No encontramos productos
+                </h3>
+
+                <p class="text-muted">
+                    Prueba con otros términos o limpia los filtros.
+                </p>
+
+                <a
+                    href="{{ route('products.index') }}"
+                    class="btn btn-dark"
+                >
+                    Ver todos los productos
+                </a>
 
             </div>
 

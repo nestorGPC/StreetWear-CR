@@ -26,6 +26,15 @@ class OrderSeeder extends Seeder
         }
 
 
+        /*
+         * Si el cliente ya tiene pedidos de una ejecución anterior,
+         * no duplicamos datos al volver a ejecutar el seeder.
+         */
+        if ($cliente->orders()->exists()) {
+            return;
+        }
+
+
         $productos = Product::all();
 
 

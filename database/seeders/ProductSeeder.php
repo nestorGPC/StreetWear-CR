@@ -23,7 +23,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Camiseta de estilo urbano con corte oversize.',
                 'price' => 15000,
                 'stock' => 20,
-                'image' => null,
+                'image' => 'products/seed/camiseta-oversize.svg',
                 'active' => true,
             ]
         );
@@ -36,7 +36,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Sudadera cómoda para un estilo casual y urbano.',
                 'price' => 32000,
                 'stock' => 15,
-                'image' => null,
+                'image' => 'products/seed/sudadera.svg',
                 'active' => true,
             ]
         );
@@ -49,7 +49,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Tenis cómodos para uso diario.',
                 'price' => 48000,
                 'stock' => 12,
-                'image' => null,
+                'image' => 'products/seed/tenis.svg',
                 'active' => true,
             ]
         );
@@ -62,7 +62,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Gorra urbana estilo snapback.',
                 'price' => 18000,
                 'stock' => 18,
-                'image' => null,
+                'image' => 'products/seed/gorra.svg',
                 'active' => true,
             ]
         );
@@ -75,7 +75,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Bolso compacto para complementar tu outfit.',
                 'price' => 22000,
                 'stock' => 10,
-                'image' => null,
+                'image' => 'products/seed/bolso.svg',
                 'active' => true,
             ]
         );

@@ -4,7 +4,67 @@ body {
     background-color: #f8f9fa;
 }
 
-.product-card img {
-    height: 220px;
+/* Cards de producto: tamaño de imagen consistente */
+.product-card {
+    border: 0;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.12);
+}
+
+.product-card .product-image {
+    height: 260px;
     object-fit: cover;
+    width: 100%;
+    background-color: #fff;
+}
+
+.product-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card .card-title {
+    font-size: 1rem;
+}
+
+/* Enlace "Ver detalle" alineado al fondo de la card */
+.product-card .card-footer {
+    margin-top: auto;
+    background-color: transparent;
+    border-top: 0;
+}
+
+/* Estados vacíos reutilizables */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.empty-state .empty-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+}
+
+/* Accesibilidad: foco visible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+/* Badges de estado de pedido: contraste */
+.badge-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
