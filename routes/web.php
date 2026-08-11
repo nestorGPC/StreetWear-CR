@@ -83,6 +83,12 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cuenta
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/mi-cuenta', [AccountController::class, 'dashboard'])
         ->name('account.dashboard');
 
@@ -103,6 +109,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Checkout
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/checkout', [CheckoutController::class, 'index'])
         ->name('checkout.index');
 
@@ -113,6 +126,23 @@ Route::middleware('auth')->group(function () {
         '/checkout/confirmacion/{order}',
         [CheckoutController::class, 'success']
     )->name('checkout.success');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PayPal Sandbox
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/checkout/paypal/return/{order}',
+        [CheckoutController::class, 'paypalReturn']
+    )->name('checkout.paypal.return');
+
+    Route::get(
+        '/checkout/paypal/cancel/{order}',
+        [CheckoutController::class, 'paypalCancel']
+    )->name('checkout.paypal.cancel');
 
 
     /*

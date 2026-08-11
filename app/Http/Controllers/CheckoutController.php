@@ -7,17 +7,18 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Services\CartCalculator;
+use App\Services\PayPalService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
-
 
 class CheckoutController extends Controller
 {
     public function __construct(
-        private CartCalculator $cartCalculator
+        private CartCalculator $cartCalculator,
+        private PayPalService $payPalService
     ) {
     }
 
@@ -37,16 +38,20 @@ class CheckoutController extends Controller
         $total = $this->cartCalculator->total($subtotal);
 
         $checkoutToken = Str::random(32);
+
         session()->put('checkout_token', $checkoutToken);
 
-        return view('checkout.index', compact(
-            'cart',
-            'subtotal',
-            'tax',
-            'shipping',
-            'total',
-            'checkoutToken'
-        ));
+        return view(
+            'checkout.index',
+            compact(
+                'cart',
+                'subtotal',
+                'tax',
+                'shipping',
+                'total',
+                'checkoutToken'
+            )
+        );
     }
 
     public function store(Request $request)
@@ -79,18 +84,25 @@ class CheckoutController extends Controller
         ]);
 
         /*
-         * Token de idempotencia: evita que un doble POST
-         * (doble clic o reenvío del formulario) cree dos pedidos.
+         * Token de idempotencia.
+         * Evita que un doble clic o reenvío del formulario
+         * cree dos pedidos.
          */
         $sessionToken = session()->pull('checkout_token');
 
         if (
-            $sessionToken === null
-            || ! hash_equals($sessionToken, $data['checkout_token'])
+            $sessionToken === null ||
+            ! hash_equals(
+                $sessionToken,
+                $data['checkout_token']
+            )
         ) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'La sesión de compra expiró. Vuelve a intentarlo.');
+                ->with(
+                    'error',
+                    'La sesión de compra expiró. Vuelve a intentarlo.'
+                );
         }
 
         try {
@@ -100,8 +112,8 @@ class CheckoutController extends Controller
                 $cart
             ) {
                 /*
-                 * Volvemos a comprobar cada producto usando la base de datos.
-                 * No confiamos únicamente en los valores almacenados en sesión.
+                 * Comprobamos nuevamente los productos
+                 * directamente en la base de datos.
                  */
                 $subtotal = 0;
 
@@ -110,26 +122,46 @@ class CheckoutController extends Controller
                         ->lockForUpdate()
                         ->find($item['id']);
 
-                    if (! $product || ! $product->active) {
+                    if (
+                        ! $product ||
+                        ! $product->active
+                    ) {
                         throw new RuntimeException(
                             'Uno de los productos ya no está disponible.'
                         );
                     }
 
-                    if ($product->stock < $item['quantity']) {
+                    if (
+                        $product->stock <
+                        $item['quantity']
+                    ) {
                         throw new RuntimeException(
                             "No hay suficiente inventario de {$product->name}."
                         );
                     }
 
-                    $subtotal += (float) $product->price * $item['quantity'];
+                    $subtotal +=
+                        (float) $product->price *
+                        $item['quantity'];
                 }
 
-                $tax = $this->cartCalculator->tax($subtotal);
-                $shipping = $this->cartCalculator->shipping($subtotal);
-                $total = $this->cartCalculator->total($subtotal);
+                $tax =
+                    $this->cartCalculator->tax(
+                        $subtotal
+                    );
 
-                $trackingNumber = $this->generateTrackingNumber();
+                $shipping =
+                    $this->cartCalculator->shipping(
+                        $subtotal
+                    );
+
+                $total =
+                    $this->cartCalculator->total(
+                        $subtotal
+                    );
+
+                $trackingNumber =
+                    $this->generateTrackingNumber();
 
                 $order = Order::create([
                     'user_id' => $request->user()->id,
@@ -139,14 +171,19 @@ class CheckoutController extends Controller
                     'tax' => $tax,
                     'shipping' => $shipping,
                     'total' => $total,
-                    'shipping_address' => $data['shipping_address'],
+                    'shipping_address' =>
+                        $data['shipping_address'],
                 ]);
 
                 foreach ($cart as $item) {
-                    $product = Product::findOrFail($item['id']);
+                    $product =
+                        Product::findOrFail(
+                            $item['id']
+                        );
 
                     $itemSubtotal =
-                        (float) $product->price * $item['quantity'];
+                        (float) $product->price *
+                        $item['quantity'];
 
                     OrderItem::create([
                         'order_id' => $order->id,
@@ -163,11 +200,6 @@ class CheckoutController extends Controller
                     );
                 }
 
-                /*
-                 * Pago local de demostración.
-                 * Más adelante esta parte se sustituye por una
-                 * respuesta real de Stripe/PayPal sandbox.
-                 */
                 Payment::create([
                     'order_id' => $order->id,
                     'method' => $data['payment_method'],
@@ -181,25 +213,64 @@ class CheckoutController extends Controller
             });
 
         } catch (RuntimeException $exception) {
-
             return redirect()
                 ->route('cart.index')
-                ->with('error', $exception->getMessage());
+                ->with(
+                    'error',
+                    $exception->getMessage()
+                );
         }
 
         session()->forget('cart');
 
-        return redirect()
-            ->route('checkout.success', $order);
+        /*
+         * Pago con tarjeta:
+         * comportamiento local de demostración.
+         */
+        if ($data['payment_method'] === 'card') {
+            return redirect()
+                ->route(
+                    'checkout.success',
+                    $order
+                );
+        }
+
+        /*
+         * Pago con PayPal Sandbox.
+         */
+        try {
+            $paypalOrder =
+                $this->payPalService->createOrder(
+                    $order
+                );
+
+        } catch (RuntimeException $exception) {
+
+            $order->load('payment');
+
+            $order->payment->update([
+                'status' => 'failed',
+            ]);
+
+            return redirect()
+                ->route(
+                    'checkout.success',
+                    $order
+                )
+                ->with(
+                    'error',
+                    $exception->getMessage()
+                );
+        }
+
+        return redirect()->away(
+            $paypalOrder['approve_url']
+        );
     }
 
     public function success(Order $order)
-{
-        $userId = Auth::id();
-
-        if ($userId === null || (int) $order->user_id !== (int) $userId) {
-            abort(403);
-        }
+    {
+        $this->authorizeOrder($order);
 
         $order->load([
             'items',
@@ -212,6 +283,127 @@ class CheckoutController extends Controller
         );
     }
 
+    public function paypalReturn(
+        Request $request,
+        Order $order
+    ) {
+        $this->authorizeOrder($order);
+
+        $token = $request->query('token');
+
+        if (! $token) {
+            return redirect()
+                ->route(
+                    'checkout.success',
+                    $order
+                )
+                ->with(
+                    'error',
+                    'No se recibió información de PayPal.'
+                );
+        }
+
+        try {
+            /*
+             * Capturamos el pago aprobado
+             * en PayPal Sandbox.
+             */
+            $resultado =
+                $this->payPalService->captureOrder(
+                    $token
+                );
+
+            if (
+                $resultado['status'] ===
+                'COMPLETED'
+            ) {
+                $order->payment->update([
+                    'status' => 'paid',
+                    'transaction_id' =>
+                        $resultado['capture_id'],
+                    'paid_at' => now(),
+                ]);
+
+                $order->update([
+                    'status' => 'processing',
+                ]);
+
+            } else {
+
+                $order->payment->update([
+                    'status' => 'failed',
+                ]);
+
+                return redirect()
+                    ->route(
+                        'checkout.success',
+                        $order
+                    )
+                    ->with(
+                        'error',
+                        'PayPal no completó el pago. ' .
+                        'Estado recibido: ' .
+                        $resultado['status']
+                    );
+            }
+
+        } catch (RuntimeException $exception) {
+
+            $order->payment->update([
+                'status' => 'failed',
+            ]);
+
+            return redirect()
+                ->route(
+                    'checkout.success',
+                    $order
+                )
+                ->with(
+                    'error',
+                    $exception->getMessage()
+                );
+        }
+
+        return redirect()
+            ->route(
+                'checkout.success',
+                $order
+            );
+    }
+
+    public function paypalCancel(Order $order)
+    {
+        $this->authorizeOrder($order);
+
+        $order->payment->update([
+            'status' => 'failed',
+        ]);
+
+        return redirect()
+            ->route(
+                'checkout.success',
+                $order
+            )
+            ->with(
+                'error',
+                'El pago con PayPal fue cancelado.'
+            );
+    }
+
+    private function authorizeOrder(
+        Order $order
+    ): void {
+        $userId = Auth::id();
+
+        if (
+            $userId === null ||
+            (int) $order->user_id !==
+            (int) $userId
+        ) {
+            abort(403);
+        }
+    }
+
     private function generateTrackingNumber(): string
     {
         do {
@@ -219,7 +411,9 @@ class CheckoutController extends Controller
                 'SWCR-' .
                 now()->format('Ymd') .
                 '-' .
-                Str::upper(Str::random(6));
+                Str::upper(
+                    Str::random(6)
+                );
 
         } while (
             Order::where(

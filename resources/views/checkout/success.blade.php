@@ -66,9 +66,43 @@
                             Estado del pedido
                         </p>
 
-                        <span class="badge bg-warning text-dark">
-                            Pendiente
-                        </span>
+                        @if ($order->status === 'pending')
+
+                            <span class="badge bg-warning text-dark">
+                                Pendiente
+                            </span>
+
+                        @elseif ($order->status === 'processing')
+
+                            <span class="badge bg-primary">
+                                En proceso
+                            </span>
+
+                        @elseif ($order->status === 'shipped')
+
+                            <span class="badge bg-info text-dark">
+                                Enviado
+                            </span>
+
+                        @elseif ($order->status === 'delivered')
+
+                            <span class="badge bg-success">
+                                Entregado
+                            </span>
+
+                        @elseif ($order->status === 'cancelled')
+
+                            <span class="badge bg-danger">
+                                Cancelado
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-secondary">
+                                {{ $order->status }}
+                            </span>
+
+                        @endif
 
                     </div>
 
@@ -93,13 +127,21 @@
                         </p>
 
                         <strong>
+
                             @if ($order->payment?->method === 'card')
+
                                 Tarjeta
+
                             @elseif ($order->payment?->method === 'paypal')
+
                                 PayPal
+
                             @else
+
                                 No especificado
+
                             @endif
+
                         </strong>
 
                     </div>
@@ -143,14 +185,18 @@
                                 <br>
 
                                 <small class="text-muted">
+
                                     Cantidad: {{ $item->quantity }}
+
                                     ×
+
                                     ₡{{ number_format(
                                         $item->price,
                                         0,
                                         ',',
                                         '.'
                                     ) }}
+
                                 </small>
 
                             </div>
