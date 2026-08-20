@@ -67,9 +67,10 @@ proyecto. Panel administrativo: añade `/admin` a la URL.
 2. Revisa tus datos de cliente.
 3. Escribe la **dirección de envío** completa
    (provincia, cantón, distrito y señas).
-4. Selecciona el **método de pago**: Tarjeta de crédito/débito o PayPal.
-   > El pago está en **modo demostración**: no introduzcas números reales
-   > de tarjeta.
+4. Selecciona el **método de pago**: Tarjeta de crédito/débito (modo
+   demostración) o PayPal (te redirige al entorno real de PayPal Sandbox).
+   > No introduzcas números reales de tarjeta ni uses tu cuenta personal
+   > de PayPal — usa siempre una cuenta de prueba (sandbox).
 5. Revisa el resumen del pedido y pulsa **Confirmar pedido**.
 
 ### 8. Confirmación y número de seguimiento

@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PaymentTest extends TestCase
@@ -17,6 +18,24 @@ class PaymentTest extends TestCase
 
     public function test_el_checkout_crea_un_pago_en_estado_pendiente(): void
     {
+        Http::fake([
+            '*/v1/oauth2/token' => Http::response([
+                'access_token' => 'FAKE_TOKEN',
+            ], 200),
+
+            '*/v2/checkout/orders' => Http::response([
+                'id' => 'PAYPAL-ORDER-ID-123',
+                'status' => 'CREATED',
+                'links' => [
+                    [
+                        'href' => 'https://www.sandbox.paypal.com/checkoutnow?token=PAYPAL-ORDER-ID-123',
+                        'rel' => 'approve',
+                        'method' => 'GET',
+                    ],
+                ],
+            ], 200),
+        ]);
+
         $category = Category::create([
             'name' => 'Ropa',
             'description' => 'Ropa urbana',

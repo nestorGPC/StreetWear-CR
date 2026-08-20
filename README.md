@@ -137,7 +137,8 @@ El seeder `UserSeeder` crea los siguientes usuarios:
 - Cambiar cantidades.
 - Ver subtotal, impuestos, envío y total.
 - Realizar el checkout ingresando una dirección.
-- Seleccionar método de pago (tarjeta o PayPal, modo demo).
+- Seleccionar método de pago (tarjeta en modo demo, o PayPal con
+  integración real de PayPal Sandbox).
 - Obtener número de seguimiento.
 - Consultar el historial de pedidos.
 - Ver el detalle de cada pedido propio.

@@ -165,8 +165,9 @@
 
                     <div class="alert alert-warning mt-4 mb-0">
 
-                        El pago está actualmente en modo de demostración.
-                        No introduzcas números reales de tarjetas.
+                        Con tarjeta, el pago es de demostración. Con
+                        PayPal serás redirigido al entorno real de
+                        PayPal Sandbox — no uses tu cuenta personal.
 
                     </div>
 

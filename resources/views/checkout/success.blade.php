@@ -313,7 +313,15 @@
 
 
                 {{-- PAGO --}}
-                <div class="alert alert-warning mt-4">
+                @php
+                    $alertaPago = match ($order->payment?->status) {
+                        'paid' => 'alert-success',
+                        'failed' => 'alert-danger',
+                        default => 'alert-warning',
+                    };
+                @endphp
+
+                <div class="alert {{ $alertaPago }} mt-4">
 
                     <strong>
                         Estado del pago:
@@ -336,7 +344,11 @@
                     <br>
 
                     <small>
-                        El sistema de pago se encuentra actualmente en modo de demostración.
+                        @if ($order->payment?->method === 'paypal')
+                            Este pago se procesó (o se intentó procesar) en el entorno sandbox de PayPal.
+                        @else
+                            El sistema de pago se encuentra actualmente en modo de demostración.
+                        @endif
                     </small>
 
                 </div>

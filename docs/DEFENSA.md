@@ -160,10 +160,11 @@ se muestra el mensaje "No hay suficiente inventario...".
 en mayúsculas; se repite si ya existe en la BD (garantiza unicidad).
 
 **¿Qué es la pasarela sandbox?**
-Es el entorno de pruebas de un proveedor de pagos (Stripe/PayPal) que no
-cobra dinero real. El plan es sustituir el pago local de demostración por
-la respuesta de la pasarela sandbox. **No se almacenan números de tarjeta
-ni credenciales** en la BD.
+Es el entorno de pruebas de PayPal que no cobra dinero real. Ya está
+implementado: al elegir "PayPal" en el checkout, se crea la orden con la
+API real de PayPal Sandbox y el cliente es redirigido a aprobar el pago
+como un comprador normal. El pago con tarjeta sigue siendo de demostración
+local. **No se almacenan números de tarjeta ni credenciales** en la BD.
 
 **¿Por qué el carrito está en sesión y no en BD?**
 Por rapidez y simplicidad: el cliente puede armar el carrito sin estar
