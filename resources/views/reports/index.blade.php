@@ -90,6 +90,50 @@
                     </select>
                 </div>
 
+
+                <div class="col-12 col-md-3">
+                    <label class="form-label">Pedido específico</label>
+
+                    <select
+                        name="pedido"
+                        class="form-select"
+                    >
+
+                        <option value="">Todos</option>
+
+                        @foreach ($pedidos as $pedido)
+
+                            <option value="{{ $pedido->id }}">
+                                {{ $pedido->tracking_number }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+                </div>
+
+
+                <div class="col-12 col-md-3">
+                    <label class="form-label">Producto específico</label>
+
+                    <select
+                        name="producto"
+                        class="form-select"
+                    >
+
+                        <option value="">Todos</option>
+
+                        @foreach ($productos as $producto)
+
+                            <option value="{{ $producto->id }}">
+                                {{ $producto->name }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+                </div>
+
             </div>
 
 
@@ -130,5 +174,3 @@
 </div>
 
 @endsection
-
-

@@ -226,7 +226,7 @@ Los PDFs se generan con DomPDF desde vistas Blade de `resources/views/reports/`.
    código.
 5. **Cookie de 5 productos / 30 días**: muestra recientes sin requerir
    cuenta ni BD extra.
-6. **Pago en modo demostración**: no se integra pasarela real ni se
-   almacenan datos de tarjeta.
+6. **Pago con tarjeta en modo demostración; PayPal con pasarela real
+   (Sandbox)**: no se almacenan datos de tarjeta en ningún caso.
 7. **SQLite**: cero configuración de servidor, ideal para desarrollo,
    pruebas y demo portátil.

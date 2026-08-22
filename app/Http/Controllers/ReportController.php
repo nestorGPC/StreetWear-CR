@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -18,6 +19,10 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get();
 
+        $pedidos = Order::orderByDesc('created_at')->get();
+
+        $productos = Product::orderBy('name')->get();
+
         $estados = [
             'pending' => 'Pendiente',
             'processing' => 'En preparación',
@@ -26,7 +31,12 @@ class ReportController extends Controller
             'cancelled' => 'Cancelado',
         ];
 
-        return view('reports.index', compact('clientes', 'estados'));
+        return view('reports.index', compact(
+            'clientes',
+            'pedidos',
+            'productos',
+            'estados'
+        ));
     }
 
     public function orders(Request $request)
@@ -58,7 +68,16 @@ class ReportController extends Controller
             ->get();
 
         $totalPedidos = $orders->count();
+
         $totalVendido = $orders->sum('total');
+
+        $ventasPorDia = $orders
+            ->groupBy(fn ($order) => $order->created_at->format('Y-m-d'))
+            ->map(fn ($ordersDelDia) => [
+                'cantidad_pedidos' => $ordersDelDia->count(),
+                'total_vendido' => $ordersDelDia->sum('total'),
+            ])
+            ->sortKeys();
 
         $ventasPorMes = $orders
             ->groupBy(fn ($order) => $order->created_at->format('Y-m'))
@@ -79,6 +98,7 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('reports.sales', [
             'totalPedidos' => $totalPedidos,
             'totalVendido' => $totalVendido,
+            'ventasPorDia' => $ventasPorDia,
             'ventasPorMes' => $ventasPorMes,
             'ventasPorCliente' => $ventasPorCliente,
             'desde' => $request->desde,
@@ -93,19 +113,27 @@ class ReportController extends Controller
     {
         $this->ensureIsAdmin();
 
-        $items = OrderItem::whereHas('order', function ($query) use ($request) {
-            $this->aplicarFiltros($query, $request);
-        })->get();
+        $items = OrderItem::query()
+            ->whereHas('order', function ($query) use ($request) {
+                $this->aplicarFiltros($query, $request);
+            })
+            ->when($request->filled('producto'), function ($query) use ($request) {
+                $query->where('product_id', $request->producto);
+            })
+            ->get();
 
         $productos = $items
             ->groupBy('product_name')
             ->map(function ($itemsDelProducto) {
                 $cantidad = $itemsDelProducto->sum('quantity');
+
                 $totalGenerado = $itemsDelProducto->sum('subtotal');
 
                 return [
                     'cantidad_vendida' => $cantidad,
-                    'precio' => $cantidad > 0 ? $totalGenerado / $cantidad : 0,
+                    'precio' => $cantidad > 0
+                        ? $totalGenerado / $cantidad
+                        : 0,
                     'total_generado' => $totalGenerado,
                 ];
             })
@@ -128,20 +156,40 @@ class ReportController extends Controller
 
     private function aplicarFiltros($query, Request $request)
     {
+        if ($request->filled('pedido')) {
+            $query->where('id', $request->pedido);
+
+            return $query;
+        }
+
         if ($request->filled('desde')) {
-            $query->whereDate('created_at', '>=', $request->desde);
+            $query->whereDate(
+                'created_at',
+                '>=',
+                $request->desde
+            );
         }
 
         if ($request->filled('hasta')) {
-            $query->whereDate('created_at', '<=', $request->hasta);
+            $query->whereDate(
+                'created_at',
+                '<=',
+                $request->hasta
+            );
         }
 
         if ($request->filled('estado')) {
-            $query->where('status', $request->estado);
+            $query->where(
+                'status',
+                $request->estado
+            );
         }
 
         if ($request->filled('cliente')) {
-            $query->where('user_id', $request->cliente);
+            $query->where(
+                'user_id',
+                $request->cliente
+            );
         }
 
         return $query;

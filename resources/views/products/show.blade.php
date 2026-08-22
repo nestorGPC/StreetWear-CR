@@ -28,7 +28,7 @@
                 <img
                     src="{{ asset('storage/' . $product->image) }}"
                     class="img-fluid w-100"
-                    style="max-height: 550px; object-fit: cover;"
+                    style="height: 550px; object-fit: cover; object-position: center 80%;"
                     alt="{{ $product->name }}"
                 >
 
@@ -112,7 +112,6 @@
                 </form>
 
 
-                {{-- Lo conectaremos al checkout --}}
                 <a
                     href="{{ route('cart.index') }}"
                     class="btn btn-outline-dark btn-lg"
@@ -136,108 +135,104 @@
     </div>
 
 </div>
-        @if ($recentProducts->isNotEmpty())
-
-            <hr class="my-5">
-
-            <section>
-
-                <div class="mb-4">
-
-                    <h2 class="fw-bold">
-                        Vistos recientemente
-                    </h2>
-
-                    <p class="text-muted">
-                        Productos que has visitado recientemente.
-                    </p>
-
-                </div>
 
 
-                <div class="row g-4">
+{{-- VISTOS RECIENTEMENTE --}}
+@if ($recentProducts->isNotEmpty())
 
-                    @foreach ($recentProducts as $recentProduct)
+    <hr class="my-5">
 
-                        <div class="col-12 col-md-6 col-lg-3">
+    <section>
 
-                            <div class="card h-100 shadow-sm border-0 product-card">
+        <div class="mb-4">
 
-                                {{-- IMAGEN --}}
-                                @if ($recentProduct->image)
+            <h2 class="fw-bold">
+                Vistos recientemente
+            </h2>
 
-                                    <img
-                                        src="{{ asset(
-                                            'storage/' .
-                                            $recentProduct->image
-                                        ) }}"
-                                        class="product-image card-img-top"
-                                        alt="{{ $recentProduct->name }}"
-                                    >
+            <p class="text-muted">
+                Productos que has visitado recientemente.
+            </p>
 
-                                @else
-
-                                    <div
-                                        class="product-image bg-light d-flex align-items-center justify-content-center"
-                                    >
-
-                                        <span class="text-muted">
-                                            Sin imagen
-                                        </span>
-
-                                    </div>
-
-                                @endif
+        </div>
 
 
-                                <div class="card-body d-flex flex-column">
+        <div class="row g-4">
 
-                                    <span
-                                        class="badge bg-secondary align-self-start mb-2"
-                                    >
-                                        {{ $recentProduct->category->name }}
-                                    </span>
+            @foreach ($recentProducts as $recentProduct)
 
+                <div class="col-12 col-md-6 col-lg-3">
 
-                                    <h5 class="fw-bold">
-                                        {{ $recentProduct->name }}
-                                    </h5>
+                    <div class="card h-100 shadow-sm border-0 product-card">
 
+                        {{-- IMAGEN --}}
+                        @if ($recentProduct->image)
 
-                                    <p class="fw-bold fs-5 mt-auto">
+                            <img
+                                src="{{ asset('storage/' . $recentProduct->image) }}"
+                                class="product-image card-img-top"
+                                alt="{{ $recentProduct->name }}"
+                            >
 
-                                        ₡{{ number_format(
-                                            $recentProduct->price,
-                                            0,
-                                            ',',
-                                            '.'
-                                        ) }}
+                        @else
 
-                                    </p>
-
-
-                                    <a
-                                        href="{{ route(
-                                            'products.show',
-                                            $recentProduct
-                                        ) }}"
-                                        class="btn btn-outline-dark w-100"
-                                    >
-                                        Ver producto
-                                    </a>
-
-                                </div>
-
+                            <div
+                                class="product-image bg-light d-flex align-items-center justify-content-center"
+                            >
+                                <span class="text-muted">
+                                    Sin imagen
+                                </span>
                             </div>
+
+                        @endif
+
+
+                        <div class="card-body d-flex flex-column">
+
+                            <span
+                                class="badge bg-secondary align-self-start mb-2"
+                            >
+                                {{ $recentProduct->category->name }}
+                            </span>
+
+
+                            <h5 class="fw-bold">
+                                {{ $recentProduct->name }}
+                            </h5>
+
+
+                            <p class="fw-bold fs-5 mt-auto">
+                                ₡{{ number_format(
+                                    $recentProduct->price,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </p>
+
+
+                            <a
+                                href="{{ route(
+                                    'products.show',
+                                    $recentProduct
+                                ) }}"
+                                class="btn btn-outline-dark w-100"
+                            >
+                                Ver producto
+                            </a>
 
                         </div>
 
-                    @endforeach
+                    </div>
 
                 </div>
 
-            </section>
+            @endforeach
 
-        @endif
+        </div>
+
+    </section>
+
+@endif
 
 @endsection

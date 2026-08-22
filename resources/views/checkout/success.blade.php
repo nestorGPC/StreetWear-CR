@@ -345,7 +345,7 @@
 
                     <small>
                         @if ($order->payment?->method === 'paypal')
-                            Este pago se procesó (o se intentó procesar) en el entorno sandbox de PayPal.
+                            Este pago se procesó (o se intentó procesar) en el entorno de PayPal.
                         @else
                             El sistema de pago se encuentra actualmente en modo de demostración.
                         @endif

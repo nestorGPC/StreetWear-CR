@@ -1,124 +1,306 @@
 <x-filament-panels::page>
 
-    <div class="space-y-6">
+    <div class="space-y-8">
+
+        {{-- Encabezado --}}
 
         <div>
-            <h2 class="text-xl font-semibold text-gray-950 dark:text-white">
+            <h2 class="fi-header-heading text-xl font-bold tracking-tight text-gray-950 dark:text-white">
                 Generar reportes
             </h2>
 
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Seleccione el reporte que desea generar y descargar en formato PDF.
+            <p class="fi-header-subheading mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Seleccione los filtros y genere el reporte que necesita.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
 
-            <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+        <form method="GET">
 
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                        <x-filament::icon
-                            icon="heroicon-o-clipboard-document-list"
-                            class="h-5 w-5 text-gray-600 dark:text-gray-300"
-                        />
-                    </div>
+            {{-- Filtros --}}
+
+            <x-filament::section icon="heroicon-o-funnel">
+
+                <x-slot name="heading">
+                    Filtros
+                </x-slot>
+
+
+                <div class="mt-5 grid grid-cols-1 gap-6 md:grid-cols-3">
+
+
+                    {{-- Fecha inicial --}}
 
                     <div>
-                        <h3 class="text-base font-semibold text-gray-950 dark:text-white">
-                            Reporte de pedidos
-                        </h3>
 
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Pedidos registrados en el sistema.
-                        </p>
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Fecha inicial
+                        </label>
+
+                        <x-filament::input.wrapper>
+
+                            <x-filament::input
+                                type="date"
+                                name="desde"
+                            />
+
+                        </x-filament::input.wrapper>
+
                     </div>
+
+
+                    {{-- Fecha final --}}
+
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Fecha final
+                        </label>
+
+                        <x-filament::input.wrapper>
+
+                            <x-filament::input
+                                type="date"
+                                name="hasta"
+                            />
+
+                        </x-filament::input.wrapper>
+
+                    </div>
+
+
+                    {{-- Estado --}}
+
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Estado
+                        </label>
+
+                        <x-filament::input.wrapper>
+
+                            <x-filament::input.select name="estado">
+
+                                <option value="">
+                                    Todos los estados
+                                </option>
+
+                                @foreach ($this->getEstados() as $valor => $etiqueta)
+
+                                    <option value="{{ $valor }}">
+                                        {{ $etiqueta }}
+                                    </option>
+
+                                @endforeach
+
+                            </x-filament::input.select>
+
+                        </x-filament::input.wrapper>
+
+                    </div>
+
+
+                    {{-- Cliente --}}
+
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Cliente
+                        </label>
+
+                        <x-filament::input.wrapper>
+
+                            <x-filament::input.select name="cliente">
+
+                                <option value="">
+                                    Todos los clientes
+                                </option>
+
+                                @foreach ($this->getClientes() as $cliente)
+
+                                    <option value="{{ $cliente->id }}">
+                                        {{ $cliente->name }}
+                                    </option>
+
+                                @endforeach
+
+                            </x-filament::input.select>
+
+                        </x-filament::input.wrapper>
+
+                    </div>
+
+
+                    {{-- Pedido --}}
+
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Pedido
+                        </label>
+
+                        <x-filament::input.wrapper>
+
+                            <x-filament::input.select name="pedido">
+
+                                <option value="">
+                                    Todos los pedidos
+                                </option>
+
+                                @foreach ($this->getPedidos() as $pedido)
+
+                                    <option value="{{ $pedido->id }}">
+                                        {{ $pedido->tracking_number }}
+                                    </option>
+
+                                @endforeach
+
+                            </x-filament::input.select>
+
+                        </x-filament::input.wrapper>
+
+                    </div>
+
+
+                    {{-- Producto --}}
+
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Producto
+                        </label>
+
+                        <x-filament::input.wrapper>
+
+                            <x-filament::input.select name="producto">
+
+                                <option value="">
+                                    Todos los productos
+                                </option>
+
+                                @foreach ($this->getProductos() as $producto)
+
+                                    <option value="{{ $producto->id }}">
+                                        {{ $producto->name }}
+                                    </option>
+
+                                @endforeach
+
+                            </x-filament::input.select>
+
+                        </x-filament::input.wrapper>
+
+                    </div>
+
                 </div>
 
-                <div class="mt-6">
-                    <x-filament::button
-                        tag="a"
-                        href="{{ route('reports.orders') }}"
-                        icon="heroicon-o-arrow-down-tray"
-                        color="gray"
-                    >
-                        Descargar reporte
-                    </x-filament::button>
-                </div>
+            </x-filament::section>
+
+
+            {{-- Reportes --}}
+
+            <div class="mt-10">
+
+                <h3 class="text-lg font-semibold text-gray-950 dark:text-white">
+                    Reportes
+                </h3>
 
             </div>
 
 
-            <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+            <div class="mt-5 grid grid-cols-1 gap-6 md:grid-cols-3">
 
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                        <x-filament::icon
-                            icon="heroicon-o-banknotes"
-                            class="h-5 w-5 text-gray-600 dark:text-gray-300"
-                        />
+
+                {{-- Reporte de pedidos --}}
+
+                <x-filament::section icon="heroicon-o-clipboard-document-list">
+
+                    <x-slot name="heading">
+                        Reporte de pedidos
+                    </x-slot>
+
+                    <x-slot name="description">
+                        Pedidos registrados en el sistema.
+                    </x-slot>
+
+                    <div class="mt-5">
+
+                        <x-filament::button
+                            type="submit"
+                            formaction="{{ route('reports.orders') }}"
+                            icon="heroicon-o-arrow-down-tray"
+                            color="primary"
+                            class="w-full"
+                        >
+                            Descargar reporte
+                        </x-filament::button>
+
                     </div>
 
-                    <div>
-                        <h3 class="text-base font-semibold text-gray-950 dark:text-white">
-                            Reporte de ventas
-                        </h3>
+                </x-filament::section>
 
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Resumen de ventas realizadas.
-                        </p>
+
+                {{-- Reporte de ventas --}}
+
+                <x-filament::section icon="heroicon-o-banknotes">
+
+                    <x-slot name="heading">
+                        Reporte de ventas
+                    </x-slot>
+
+                    <x-slot name="description">
+                        Resumen de ventas realizadas.
+                    </x-slot>
+
+                    <div class="mt-5">
+
+                        <x-filament::button
+                            type="submit"
+                            formaction="{{ route('reports.sales') }}"
+                            icon="heroicon-o-arrow-down-tray"
+                            color="primary"
+                            class="w-full"
+                        >
+                            Descargar reporte
+                        </x-filament::button>
+
                     </div>
-                </div>
 
-                <div class="mt-6">
-                    <x-filament::button
-                        tag="a"
-                        href="{{ route('reports.sales') }}"
-                        icon="heroicon-o-arrow-down-tray"
-                        color="gray"
-                    >
-                        Descargar reporte
-                    </x-filament::button>
-                </div>
+                </x-filament::section>
+
+
+                {{-- Reporte de productos --}}
+
+                <x-filament::section icon="heroicon-o-cube">
+
+                    <x-slot name="heading">
+                        Reporte de productos
+                    </x-slot>
+
+                    <x-slot name="description">
+                        Productos vendidos y sus resultados.
+                    </x-slot>
+
+                    <div class="mt-5">
+
+                        <x-filament::button
+                            type="submit"
+                            formaction="{{ route('reports.products') }}"
+                            icon="heroicon-o-arrow-down-tray"
+                            color="primary"
+                            class="w-full"
+                        >
+                            Descargar reporte
+                        </x-filament::button>
+
+                    </div>
+
+                </x-filament::section>
+
 
             </div>
 
-
-            <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                        <x-filament::icon
-                            icon="heroicon-o-cube"
-                            class="h-5 w-5 text-gray-600 dark:text-gray-300"
-                        />
-                    </div>
-
-                    <div>
-                        <h3 class="text-base font-semibold text-gray-950 dark:text-white">
-                            Reporte de productos
-                        </h3>
-
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Productos vendidos y sus resultados.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <x-filament::button
-                        tag="a"
-                        href="{{ route('reports.products') }}"
-                        icon="heroicon-o-arrow-down-tray"
-                        color="gray"
-                    >
-                        Descargar reporte
-                    </x-filament::button>
-                </div>
-
-            </div>
-
-        </div>
+        </form>
 
     </div>
 

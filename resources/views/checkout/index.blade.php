@@ -165,9 +165,9 @@
 
                     <div class="alert alert-warning mt-4 mb-0">
 
-                        Con tarjeta, el pago es de demostración. Con
-                        PayPal serás redirigido al entorno real de
-                        PayPal Sandbox — no uses tu cuenta personal.
+                        Con tarjeta, el pago es de demostración.
+                        Con PayPal serás redirigido al entorno de
+                        PayPal — no uses tu cuenta personal.
 
                     </div>
 

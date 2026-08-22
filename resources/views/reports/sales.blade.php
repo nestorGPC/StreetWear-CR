@@ -1,130 +1,228 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Reporte de Ventas</title>
+
+    <meta charset="utf-8">
+
+    <title>
+        Reporte de ventas - StreetWear CR
+    </title>
 
     <style>
+
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: 'DejaVu Sans', sans-serif;
             font-size: 12px;
             color: #222;
         }
 
         h1 {
-            text-align: center;
-            margin-bottom: 20px;
+            font-size: 18px;
+            margin-bottom: 0;
         }
 
         h2 {
+            font-size: 14px;
             margin-top: 25px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .filtros {
+        .subtitulo {
+            color: #666;
+            margin-top: 4px;
             margin-bottom: 20px;
-        }
-
-        .filtros p {
-            margin: 4px 0;
         }
 
         .resumen {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .resumen td {
-            border: 1px solid #999;
-            padding: 10px;
-            text-align: center;
+            padding: 6px 10px;
+            border: 1px solid #ccc;
         }
 
-        .resumen .titulo {
-            background-color: #eeeeee;
-            font-weight: bold;
-        }
-
-        table {
+        table.datos {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
         }
 
-        th,
-        td {
-            border: 1px solid #999;
-            padding: 7px;
+        table.datos th,
+        table.datos td {
+            border: 1px solid #ccc;
+            padding: 6px 8px;
             text-align: left;
         }
 
-        th {
-            background-color: #eeeeee;
+        table.datos th {
+            background-color: #222;
+            color: #fff;
         }
 
-        .numero {
+        .text-right {
             text-align: right;
         }
+
     </style>
+
 </head>
 
 <body>
 
-    <h1>Reporte de Ventas</h1>
+    <h1>
+        StreetWear CR
+    </h1>
 
-    <div class="filtros">
-        <p>
-            <strong>Desde:</strong>
-            {{ $desde ?: 'Todos' }}
-        </p>
 
-        <p>
-            <strong>Hasta:</strong>
-            {{ $hasta ?: 'Todos' }}
-        </p>
+    <p class="subtitulo">
 
-        <p>
-            <strong>Estado:</strong>
-            {{ $estado ?: 'Todos' }}
-        </p>
-    </div>
+        Reporte de ventas —
+        Generado el {{ now()->format('d/m/Y H:i') }}
+
+        @if ($desde)
+
+            &middot;
+            Desde: {{ $desde }}
+
+        @endif
+
+        @if ($hasta)
+
+            &middot;
+            Hasta: {{ $hasta }}
+
+        @endif
+
+        @if ($estado)
+
+            &middot;
+            Estado: {{ $estado }}
+
+        @endif
+
+    </p>
+
 
     <table class="resumen">
-        <tr>
-            <td class="titulo">
-                Total de pedidos
-            </td>
-
-            <td class="titulo">
-                Total vendido
-            </td>
-        </tr>
 
         <tr>
+
             <td>
+                <strong>Cantidad de pedidos:</strong>
                 {{ $totalPedidos }}
             </td>
 
             <td>
-                ₡{{ number_format($totalVendido, 2) }}
+                <strong>Total vendido:</strong>
+                ₡{{ number_format($totalVendido, 0, ',', '.') }}
             </td>
+
         </tr>
+
     </table>
 
-    <h2>Ventas por mes</h2>
 
-    <table>
+    <h2>
+        Ventas por día
+    </h2>
+
+
+    <table class="datos">
+
         <thead>
+
             <tr>
-                <th>Mes</th>
-                <th>Cantidad de pedidos</th>
-                <th>Total vendido</th>
+
+                <th>
+                    Día
+                </th>
+
+                <th>
+                    Cantidad de pedidos
+                </th>
+
+                <th class="text-right">
+                    Total vendido
+                </th>
+
             </tr>
+
         </thead>
 
+
         <tbody>
-            @forelse ($ventasPorMes as $mes => $datos)
+
+            @forelse ($ventasPorDia as $dia => $datos)
+
                 <tr>
+
+                    <td>
+                        {{ $dia }}
+                    </td>
+
+                    <td>
+                        {{ $datos['cantidad_pedidos'] }}
+                    </td>
+
+                    <td class="text-right">
+                        ₡{{ number_format($datos['total_vendido'], 0, ',', '.') }}
+                    </td>
+
+                </tr>
+
+            @empty
+
+                <tr>
+
+                    <td colspan="3">
+                        No hay ventas que coincidan con los filtros seleccionados.
+                    </td>
+
+                </tr>
+
+            @endforelse
+
+        </tbody>
+
+    </table>
+
+
+    <h2>
+        Ventas por mes
+    </h2>
+
+
+    <table class="datos">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Mes
+                </th>
+
+                <th>
+                    Cantidad de pedidos
+                </th>
+
+                <th class="text-right">
+                    Total vendido
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            @forelse ($ventasPorMes as $mes => $datos)
+
+                <tr>
+
                     <td>
                         {{ $mes }}
                     </td>
@@ -133,34 +231,63 @@
                         {{ $datos['cantidad_pedidos'] }}
                     </td>
 
-                    <td class="numero">
-                        ₡{{ number_format($datos['total_vendido'], 2) }}
+                    <td class="text-right">
+                        ₡{{ number_format($datos['total_vendido'], 0, ',', '.') }}
                     </td>
+
                 </tr>
+
             @empty
+
                 <tr>
+
                     <td colspan="3">
-                        No hay ventas para mostrar.
+                        No hay ventas que coincidan con los filtros seleccionados.
                     </td>
+
                 </tr>
+
             @endforelse
+
         </tbody>
+
     </table>
 
-    <h2>Ventas por cliente</h2>
 
-    <table>
+    <h2>
+        Ventas por cliente
+    </h2>
+
+
+    <table class="datos">
+
         <thead>
+
             <tr>
-                <th>Cliente</th>
-                <th>Cantidad de pedidos</th>
-                <th>Total vendido</th>
+
+                <th>
+                    Cliente
+                </th>
+
+                <th>
+                    Cantidad de pedidos
+                </th>
+
+                <th class="text-right">
+                    Total comprado
+                </th>
+
             </tr>
+
         </thead>
 
+
         <tbody>
+
             @forelse ($ventasPorCliente as $cliente => $datos)
+
                 <tr>
+
                     <td>
                         {{ $cliente }}
                     </td>
@@ -169,19 +296,28 @@
                         {{ $datos['cantidad_pedidos'] }}
                     </td>
 
-                    <td class="numero">
-                        ₡{{ number_format($datos['total_vendido'], 2) }}
+                    <td class="text-right">
+                        ₡{{ number_format($datos['total_vendido'], 0, ',', '.') }}
                     </td>
+
                 </tr>
+
             @empty
+
                 <tr>
+
                     <td colspan="3">
-                        No hay ventas para mostrar.
+                        No hay ventas que coincidan con los filtros seleccionados.
                     </td>
+
                 </tr>
+
             @endforelse
+
         </tbody>
+
     </table>
 
 </body>
+
 </html>
